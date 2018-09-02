@@ -24,6 +24,21 @@ No more entering your password to reboot, authorize Boot Manager once and then b
 ### 3rd-Party EFI Support
 Support for BootCamp in EFI mode on PCI-e solid state drives and SATA PCI-e controllers.
 
+## Installing
+Before installing Boot Manager if you want to use BootCamp in EFI mode for PCI-e SSDs or SATA PCI-e
+controller cards you must disable the kext signature check.
+
+To disable the kext signature check, you must restart on the recovery partition (Recovery HD) and access
+the terminal in the Utilities menu and then execute the following commands:
+
+```
+csrutil disable
+csrutil enable --without kext
+```
+
+Then go to the Releases section of the Boot Manager repository and download the latest installation
+package, and install it normally by double-clicking on it.
+
 ## Copyright
 - Copyright (c) 2017-2018 [Abdy Franco](http://abdyfran.co/)
 - Copyright (c) 2013-2014 [Buttered Cat Software](http://buttered-cat.com)
