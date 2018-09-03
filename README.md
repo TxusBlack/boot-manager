@@ -21,8 +21,8 @@ Enable menu bar only and have quick access to rebooting to your other operating 
 ### Reboot Helper
 No more entering your password to reboot, authorize Boot Manager once and then be able to reboot quickly.
 
-### 3rd-Party EFI Support
-Support for BootCamp in EFI mode on PCI-e solid state drives and SATA PCI-e controllers.
+### Boot Camp on PCI-e SSD and SATA Controllers
+Support for Boot Camp in EFI mode on PCI-e SSDs and SATA PCI-e controllers.
 
 ## Installing
 1. Before installing Boot Manager if you want to use BootCamp on PCI-e SSDs or SATA PCI-e
@@ -36,7 +36,7 @@ csrutil disable
 csrutil enable --without kext
 ```
 
-**Note:** If you do not need to add BootCamp support to PCI-e SSDs, SATA PCI-e controller
+**Note:** If you do not need to add Boot Camp support to PCI-e SSDs, SATA PCI-e controller
 cards or you are not using Boot Manager on a Mac Pro, you can skip this step.
 
 2. Then go to the Releases section of the Boot Manager repository and download the latest installation
