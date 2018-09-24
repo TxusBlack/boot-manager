@@ -43,12 +43,14 @@
 																   stringByAppendingPathComponent:@"Library"]
 																  stringByAppendingPathComponent:@"CoreServices"]
 																 stringByAppendingPathComponent:@"ServerVersion.plist"];
-		BOOL isDir;
-		if([fileManager fileExistsAtPath:[self.volume.disk.volumePath stringByAppendingPathComponent:@"Windows"] isDirectory:&isDir])
+        NSString *winbugsPath = [[self.volume.disk.volumePath stringByAppendingPathComponent:@"Windows"]
+                                         stringByAppendingPathComponent:@"System32"];
+        BOOL isDir;
+		if([fileManager fileExistsAtPath:winbugsPath isDirectory:&isDir])
 		{
 			if(isDir)
 			{
-				osName = @"Windows";
+                osName = @"Windows"; // Winbugs :P
 				legacy = YES;
 			}
 		}

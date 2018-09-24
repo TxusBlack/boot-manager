@@ -461,7 +461,7 @@
 			attributes = {
 				CLASSPREFIX = QB;
 				LastUpgradeCheck = 0510;
-				ORGANIZATIONNAME = Xserve;
+				ORGANIZATIONNAME = abdyfran.co;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Boot Manager" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -786,7 +786,7 @@
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = com.xserve.BootManager;
+				PRODUCT_BUNDLE_IDENTIFIER = co.abdyfran.BootManager;
 				PRODUCT_NAME = "Boot Manager";
 				UPDATE_BUILD = /beta;
 				UPDATE_HOST = "buttered-cat.com";
@@ -809,7 +809,7 @@
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = com.xserve.BootManager;
+				PRODUCT_BUNDLE_IDENTIFIER = co.abdyfran.BootManager;
 				PRODUCT_NAME = "Boot Manager";
 				UPDATE_BUILD = /beta;
 				UPDATE_HOST = "localhost:3000";
@@ -831,7 +831,7 @@
 				INFOPLIST_PREPROCESS = YES;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				PRODUCT_BUNDLE_IDENTIFIER = com.xserve.BootManager;
+				PRODUCT_BUNDLE_IDENTIFIER = co.abdyfran.BootManager;
 				PRODUCT_NAME = "Boot Manager";
 				STRIP_INSTALLED_PRODUCT = YES;
 				UPDATE_BUILD = "";

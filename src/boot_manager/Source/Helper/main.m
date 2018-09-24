@@ -55,21 +55,6 @@ int main(int argc, char *argv[])
         [blessArguments addObject:@"--setBoot"];
         if(isLegacy)
             [blessArguments addObject:@"--legacy"];
-        
-        /*NSTask *task = [[NSTask alloc] init];
-        [task setLaunchPath:@"/usr/sbin/bless"];
-        [task setArguments:blessArguments];
-        
-        [task launch];
-        [task waitUntilExit];
-        
-        int status = [task terminationStatus];
-        
-        if(status != 0)
-        {
-            NSLog(@"Failed to set boot: %i", status);
-            ret = kQBVolumeManagerSetBootError;
-        }*/
 
         STPrivilegedTask *privilegedTask = [[STPrivilegedTask alloc] init];
         [privilegedTask setLaunchPath:@"/usr/sbin/bless"];

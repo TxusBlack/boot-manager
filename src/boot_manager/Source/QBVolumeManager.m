@@ -11,6 +11,7 @@
 #import "BCSystemInfo.h"
 #import <Security/Security.h>
 #import "QBVolume.h"
+#import "STPrivilegedTask.h"
 
 @interface QBVolumeManager() <BDDiskArbitrationSessionDelegate>
 - (void)checkHelperPermissions;
@@ -274,7 +275,8 @@ cleanup:
     
     BOOL useLegacyMode = [[NSUserDefaults standardUserDefaults] boolForKey:@"UseLegacyMode"];
     BDDisk *disk = volume.disk;
-    if(volume.legacyOS && !useLegacyMode && self.efiDisk) { // since we flag windows as legacy right now
+    
+    if(volume.legacyOS && !useLegacyMode) { // since we flag windows as legacy right now
         disk = self.efiDisk;
     }
 	
@@ -282,8 +284,11 @@ cleanup:
 	{
 		NSTask *helperTask = [[NSTask alloc] init];
 		NSArray *arguments = [NSArray arrayWithObject:[disk devicePath]];
-		if(volume.legacyOS && useLegacyMode)
+        
+        if(volume.legacyOS && useLegacyMode) {
 			arguments = [arguments arrayByAddingObject:@"--legacy"];
+        }
+        
 		[helperTask setLaunchPath:[self helperPath]];
 		[helperTask setArguments:arguments];
 		[helperTask launch];
@@ -292,11 +297,37 @@ cleanup:
 	}
 	else
 	{
-		AuthorizationRef myAuthorizationRef;
+        NSMutableArray *blessArguments = [NSMutableArray array];
+        [blessArguments addObject:@"--device"];
+        [blessArguments addObject:[disk devicePath]];
+        [blessArguments addObject:@"--nextonly"];
+        [blessArguments addObject:@"--setBoot"];
+        
+        if(volume.legacyOS && useLegacyMode) {
+            [blessArguments addObject:@"--legacy"];
+        }
+        
+        NSLog(@"Booting: %@", [disk volumePath]);
+
+        STPrivilegedTask *privilegedTask = [[STPrivilegedTask alloc] init];
+        [privilegedTask setLaunchPath:@"/usr/sbin/bless"];
+        [privilegedTask setArguments:blessArguments];
+        
+        [privilegedTask launch];
+        [privilegedTask waitUntilExit];
+        
+        int status = [privilegedTask terminationStatus];
+        
+        if(status != 0)
+        {
+            returnValue = kQBVolumeManagerUnknownError;
+        }
+        
+		/*AuthorizationRef myAuthorizationRef;
 		OSStatus myStatus;
 		// bring app forward so auth window is in focus
 		[NSApp activateIgnoringOtherApps:YES];
-		
+        
 		myStatus = AuthorizationCreate (NULL, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &myAuthorizationRef);
 		
 		if (myStatus == noErr) {
@@ -307,8 +338,7 @@ cleanup:
 			args[3] = "--setBoot";
 			if(volume.legacyOS && useLegacyMode) {
 				args[4] = "--legacy";
-			}
-			else {
+			} else {
 				args[4] = NULL;
 			}
 			args[5] = NULL; // terminate the args
@@ -333,9 +363,9 @@ cleanup:
 				}
 				//return kQBVolumeManagerSetBootError;
 			}
-		}
-		else
+         } else {
 			returnValue = kQBVolumeManagerAuthenticationError;
+         }*/
 	}
 
 	return returnValue;

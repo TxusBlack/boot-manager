@@ -21,8 +21,6 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 + (void)initialize {
     if (self == [QBAppDelegate class]) {
         NSDictionary *defaults = @{
-//                                   @"SUCheckAtStartup": @(YES),
-//                                   @"SUScheduledCheckInterval": @(86400),
                                    @"ShowIconInDock": @(YES),
                                    @"ShowStatusIcon": @(YES),
                                    @"ShowOSXBuildNumber": @(NO),
@@ -38,10 +36,6 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 															  forKeyPath:@"values.ShowStatusIcon"
 																 options:0
 																 context:kShowStatusIconContext];
-//	[[NSUserDefaultsController sharedUserDefaultsController] addObserver:self
-//															  forKeyPath:@"values.ShowIconInDock"
-//																 options:0
-//																 context:kShowIconInDockContext];
 }
 
 #pragma mark -
@@ -49,8 +43,6 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
 	if (context == kShowStatusIconContext) {
         [self setupStatusItem];
-//	} else if (context == kShowIconInDockContext) {
-//		[self setDockIcon:[[NSUserDefaults standardUserDefaults] boolForKey:@"ShowIconInDock"]];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
@@ -88,7 +80,6 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 - (void)dealloc
 {
 	[[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"values.ShowStatusIcon" context:kShowStatusIconContext];
-//	[[NSUserDefaultsController sharedUserDefaultsController] removeObserver:self forKeyPath:@"values.ShowIconInDock" context:kShowIconInDockContext];
 }
 
 - (IBAction)showAboutWindow:(id)sender
@@ -102,12 +93,12 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 
 - (IBAction)sendFeedback:(id)sender
 {
-	NSURL *url = [NSURL URLWithString:@"http://abdyfran.co/projects/xserve-reloaded"];
+	NSURL *url = [NSURL URLWithString:@"https://github.com/abdyfranco/boot-manager"];
 	[[NSWorkspace sharedWorkspace] openURL:url];
 }
 
 - (IBAction)showApplicationWebsite:(id)sender {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://abdyfran.co/projects/xserve-reloaded"]];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/abdyfranco/boot-manager"]];
 }
 
 - (IBAction)showCompanyWebsite:(id)sender {

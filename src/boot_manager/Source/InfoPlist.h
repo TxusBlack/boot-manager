@@ -1,2 +1,2 @@
-#define BC_GIT_VERSION 
-#define BC_GIT_VERSION_STRING @""
+#define BC_GIT_VERSION v1.1
+#define BC_GIT_VERSION_STRING @"v1.1"

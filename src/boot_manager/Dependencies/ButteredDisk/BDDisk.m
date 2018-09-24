@@ -146,7 +146,8 @@ void bcDiskDidEject(DADiskRef disk, DADissenterRef dissenter, void *context)
 
 - (NSString *)volumePath
 {
-	return [[self volumeURL] path];
+	//return [[self volumeURL] path];
+    return [NSString stringWithFormat:@"/Volumes/%@", [self volumeName]];
 }
 
 - (NSString *)filesystem
