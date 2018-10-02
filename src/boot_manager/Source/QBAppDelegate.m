@@ -119,6 +119,11 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 	return (![[NSUserDefaults standardUserDefaults] boolForKey:@"ShowStatusIcon"]);
 }
 
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication
+{
+    return (![[NSUserDefaults standardUserDefaults] boolForKey:@"ShowStatusIcon"]);
+}
+
 #pragma mark -
 
 

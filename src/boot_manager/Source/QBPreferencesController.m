@@ -39,7 +39,7 @@
 
 - (IBAction)toggleLegacyBooting:(id)sender
 {
-	
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"QBRefreshVolumes" object:nil];
 }
 
 - (BOOL)isLeopardOrBetter

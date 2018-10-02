@@ -19,6 +19,7 @@
 - (OSStatus)fixPermissions;
 - (BOOL)passwordlessBootingEnabled;
 @property (nonatomic, strong) BDDisk *efiDisk;
+@property (nonatomic, strong) BDDisk *efiWinbugs;
 @end
 
 
@@ -230,36 +231,24 @@ cleanup:
 
 - (void)diskDidAppear:(BDDisk *)disk
 {
-	if([[disk volumeName] isEqualToString:@"EFI"]) {
-		self.efiDisk = disk;
-	}
+    if ([[disk filesystem] isEqualToString:@"msdos"] && [[disk volumeName] isEqualToString:@"NO NAME"] && [disk mediaSize] < 400000000) {
+        // Winbugs EFI Partition
+        self.efiWinbugs = disk;
+    }
+    else if([[disk volumeName] isEqualToString:@"EFI"]) {
+        // macOS EFI Partition
+        self.efiDisk = disk;
+    }
 	else if([disk filesystem] && ![disk isNetwork] && [disk isMountable])
-	{
-//		NSLog(@"Disk appeared: %@ - %lu", disk, (unsigned long)[disk hash]);
-		
+	{		
 		QBOSDetectOperation *op = [QBOSDetectOperation detectOperationWithVolume:[QBVolume volumeWithDisk:disk]];
 		op.delegate = self;
 		[volumeCheckQueue addOperation:op];
-		
-		/*NSDictionary *info = [self volumeDictionaryForDisk:disk];
-		if(info)
-		{
-			NSLog(@"System disk, adding");
-			[self willChangeValueForKey:@"volumes"];
-			//[self setVolumes:[[self volumes] arrayByAddingObject:info]];
-			[mVolumes addObject:info];
-			[self didChangeValueForKey:@"volumes"];
-		}*/
 	}
-//	else
-//		NSLog(@"Ignored disk: %@", disk);
 }
 
 - (void)diskDidDisappear:(BDDisk *)disk
 {
-//	NSLog(@"Disk disappeared: %@ - %lu", disk, (unsigned long)[disk hash]);
-	//NSDictionary *info = [note userInfo];
-	//[self setVolumes:[[self volumes] arrayByAddingObject:[self volumeDictionaryAtPath:[info objectForKey:@"NSDevicePath"]]]];
 	[self willChangeValueForKey:@"volumes"];
 	[volumes removeObject:[QBVolume volumeWithDisk:disk]];
 	[self didChangeValueForKey:@"volumes"];
@@ -276,8 +265,11 @@ cleanup:
     BOOL useLegacyMode = [[NSUserDefaults standardUserDefaults] boolForKey:@"UseLegacyMode"];
     BDDisk *disk = volume.disk;
     
-    if(volume.legacyOS && !useLegacyMode) { // since we flag windows as legacy right now
-        disk = self.efiDisk;
+    if((volume.legacyOS && !useLegacyMode)) { // since we flag winbugs as legacy right now
+        disk = self.efiWinbugs;
+        NSLog(@"devicePath: '%s'", (char *)[[disk devicePath] UTF8String]);
+        NSLog(@"filesystem: '%s'", (char *)[[disk filesystem] UTF8String]);
+        NSLog(@"volumeName: '%s'", (char *)[[disk volumeName] UTF8String]);
     }
 	
 	if([self passwordlessBootingEnabled])
@@ -285,7 +277,7 @@ cleanup:
 		NSTask *helperTask = [[NSTask alloc] init];
 		NSArray *arguments = [NSArray arrayWithObject:[disk devicePath]];
         
-        if(volume.legacyOS && useLegacyMode) {
+        if((volume.legacyOS && useLegacyMode)) {
 			arguments = [arguments arrayByAddingObject:@"--legacy"];
         }
         
@@ -297,33 +289,7 @@ cleanup:
 	}
 	else
 	{
-        NSMutableArray *blessArguments = [NSMutableArray array];
-        [blessArguments addObject:@"--device"];
-        [blessArguments addObject:[disk devicePath]];
-        [blessArguments addObject:@"--nextonly"];
-        [blessArguments addObject:@"--setBoot"];
-        
-        if(volume.legacyOS && useLegacyMode) {
-            [blessArguments addObject:@"--legacy"];
-        }
-        
-        NSLog(@"Booting: %@", [disk volumePath]);
-
-        STPrivilegedTask *privilegedTask = [[STPrivilegedTask alloc] init];
-        [privilegedTask setLaunchPath:@"/usr/sbin/bless"];
-        [privilegedTask setArguments:blessArguments];
-        
-        [privilegedTask launch];
-        [privilegedTask waitUntilExit];
-        
-        int status = [privilegedTask terminationStatus];
-        
-        if(status != 0)
-        {
-            returnValue = kQBVolumeManagerUnknownError;
-        }
-        
-		/*AuthorizationRef myAuthorizationRef;
+		AuthorizationRef myAuthorizationRef;
 		OSStatus myStatus;
 		// bring app forward so auth window is in focus
 		[NSApp activateIgnoringOtherApps:YES];
@@ -336,15 +302,17 @@ cleanup:
 			args[1] = (char *)[[disk devicePath] UTF8String];
 			args[2] = "--nextonly";
 			args[3] = "--setBoot";
-			if(volume.legacyOS && useLegacyMode) {
+			if((volume.legacyOS && useLegacyMode)) {
 				args[4] = "--legacy";
 			} else {
 				args[4] = NULL;
 			}
-			args[5] = NULL; // terminate the args
+            args[5] = NULL; // terminate the args
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-			myStatus = AuthorizationExecuteWithPrivileges(myAuthorizationRef, "/usr/sbin/bless", 0, args, NULL);
+            myStatus = AuthorizationExecuteWithPrivileges(myAuthorizationRef, "/usr/sbin/bless", 0, args, NULL);
+            NSLog(@"Executing... /usr/sbin/bless %s %s %s %s %s", args[0], args[1], args[2], args[3], args[4]);
 #pragma clang diagnostic pop
 			
 			if (myStatus != noErr)
@@ -361,11 +329,10 @@ cleanup:
 						returnValue = kQBVolumeManagerUnknownError;
 						break;
 				}
-				//return kQBVolumeManagerSetBootError;
 			}
          } else {
 			returnValue = kQBVolumeManagerAuthenticationError;
-         }*/
+         }
 	}
 
 	return returnValue;

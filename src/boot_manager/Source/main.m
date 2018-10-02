@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
 {
 	Boolean keyExists = NO;
 	Boolean showInDock = NO;
-	showInDock = CFPreferencesGetAppBooleanValue(CFSTR("ShowIconInDock"), CFSTR("com.xserve.BootManager"), &keyExists);
+	showInDock = CFPreferencesGetAppBooleanValue(CFSTR("ShowIconInDock"), CFSTR("co.abdyfran.BootManager"), &keyExists);
 	if(!keyExists || showInDock)
 	{
 		ProcessSerialNumber psn = { 0, kCurrentProcess };

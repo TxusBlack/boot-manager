@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="14113" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
         <deployment version="1050" identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14113"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -408,17 +408,17 @@ DQ
                         <action selector="showPreferences:" target="226" id="271"/>
                     </connections>
                 </menuItem>
+                <menuItem title="Unités de départ" id="NPN-Ix-GJF">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="makeKeyAndOrderFront:" target="21" id="Yne-AW-5Qu"/>
+                    </connections>
+                </menuItem>
                 <menuItem isSeparatorItem="YES" id="306"/>
                 <menuItem title="Redémarrer…" id="305">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="restart:" target="213" id="308"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="Arrêt…" id="307">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="shutdown:" target="213" id="309"/>
                     </connections>
                 </menuItem>
                 <menuItem isSeparatorItem="YES" id="252"/>

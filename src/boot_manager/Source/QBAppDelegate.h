@@ -30,5 +30,6 @@
 - (IBAction)showCompanyWebsite:(id)sender;
 - (IBAction)showPreferences:(id)sender;
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication;
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication;
 
 @end

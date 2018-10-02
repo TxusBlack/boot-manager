@@ -25,19 +25,14 @@ No more entering your password to reboot, authorize Boot Manager once and then b
 Support for Boot Camp in EFI mode on PCI-e SSDs and SATA PCI-e controllers.
 
 ## Installing
-1. Before installing Boot Manager if you want to use BootCamp on PCI-e SSDs or SATA PCI-e
-controller cards you must disable the kext signature check. (Only for Mac Pro and Xserve)
+1. Before installing you must disable the System Integrity Protection (a.k.a. SIP).
 
-To disable the kext signature check, you must restart on the recovery partition (Recovery HD) and access
-the terminal in the Utilities menu and then execute the following commands:
+To disable the System Integrity Protection, you must restart on the recovery partition (Recovery HD) and
+access the terminal in the Utilities menu and then execute the following command:
 
 ```
 csrutil disable
-csrutil enable --without kext
 ```
-
-**Note:** If you do not need to add Boot Camp support to PCI-e SSDs, SATA PCI-e controller
-cards or you are not using Boot Manager on a Mac Pro / Xserve, you can skip this step.
 
 2. Then go to the Releases section of the Boot Manager repository and download the latest installation
 package, and install it normally by double-clicking on it.
