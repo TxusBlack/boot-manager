@@ -16,10 +16,7 @@ lost access to the startup manager when starting up their Mac.
 Quickly reboot into Windows or alternate macOS drives, no holding of option key or startup disk changing.
 
 ### Universal Compatibility
-Enable menu bar only and have quick access to rebooting to your other operating systems.
-
-### Reboot Helper
-No more entering your password to reboot, authorize Boot Manager once and then be able to reboot quickly.
+Enable menu bar only and have quick access to rebooting to your other operating systems, like Windows.
 
 ### Boot Camp on PCI-e SSD and SATA Controllers
 Support for Boot Camp in EFI mode on PCI-e SSDs and SATA PCI-e controllers.
@@ -36,6 +33,47 @@ csrutil disable
 
 2. Then go to the Releases section of the Boot Manager repository and download the latest installation
 package, and install it normally by double-clicking on it.
+
+### Compatibility
+Boot Manager supports the following operating systems in the following modes, Some of the operating systems
+listed below (Marked with an asterisk) only work if they are have their own dedicated EFI Partition.
+
+| *Operative System*           | *Boot Modes* |
+|------------------------------|--------------|
+| macOS                        | EFI          |
+| Windows                      | BIOS, EFI    |
+| Windows (Installation DVD)   | BIOS         |
+| Ubuntu                       | EFI*         |
+| Debian                       | EFI*         |
+| Fedora                       | EFI*         |
+| Manjaro                      | EFI*         |
+| CentOS                       | EFI*         |
+| Slackware                    | EFI*         |
+| openSUSE                     | EFI*         |
+| Linux x86 (Installation DVD) | BIOS         |
+| GRUB                         | EFI          |
+| ELILO                        | EFI          |
+| Next Loader                  | EFI          |
+
+## Contributing to the Project
+### Developers
+Boot Manager is an open source project, where all developers are welcome to contribute to the project by
+solving problems or adding new features.
+
+If you are a developer who wants to contribute, you can make a fork of the main repository, where you
+can work an add your code and then open a pull request.
+
+### Beta Testers
+You can also contribute to the project as a Beta Tester, testing each new beta version or new features
+of the project and sharing your feedback with us to improve the development.
+
+### Donating to the Project
+If you don't have enough time, the equipment or enough knowledge to contribute in any of the ways
+mentioned above to the project, you can also donate any amount through PayPal or Bitcoin.
+
+##### Donate any amount:
+ - [PayPal](https://www.paypal.me/abdyfranco)
+ - [Bitcoin](https://www.blockchain.com/btc/payment_request?address=1LMLf1JDouaeEwpUxsH6PpFptYM4LB7b9B)
 
 ## Copyright
 - Copyright (c) 2017-2018 [Abdy Franco](http://abdyfran.co/)

@@ -231,13 +231,28 @@ cleanup:
 
 - (void)diskDidAppear:(BDDisk *)disk
 {
-    if ([[disk filesystem] isEqualToString:@"msdos"] && [[disk volumeName] isEqualToString:@"NO NAME"] && [disk mediaSize] < 400000000) {
+    /*NSLog(@"devicePath: '%s'", (char *)[[disk devicePath] UTF8String]);
+    NSLog(@"filesystem: '%s'", (char *)[[disk filesystem] UTF8String]);
+    NSLog(@"volumeName: '%s'", (char *)[[disk volumeName] UTF8String]);
+    NSLog(@"volumePath: '%s'", (char *)[[disk volumePath] UTF8String]);
+    NSLog(@"----");*/
+
+    if ([[disk filesystem] isEqualToString:@"msdos"] && [[disk volumeName] isEqualToString:@"NO NAME"]) {
         // Winbugs EFI Partition
         self.efiWinbugs = disk;
     }
     else if([[disk volumeName] isEqualToString:@"EFI"]) {
-        // macOS EFI Partition
+        // macOS/Linux EFI Partition
         self.efiDisk = disk;
+     
+        // Probably Winbugs is installed on the same hard drive in EFI mode?
+        if ([[self.efiWinbugs volumeName] isEqualToString:@"(null)"] || [[self.efiWinbugs volumeName] isEqualToString:@""] || self.efiWinbugs == NULL) {
+            self.efiWinbugs = disk;
+        }
+
+        QBOSDetectOperation *op = [QBOSDetectOperation detectOperationWithVolume:[QBVolume volumeWithDisk:disk]];
+        op.delegate = self;
+        [volumeCheckQueue addOperation:op];
     }
 	else if([disk filesystem] && ![disk isNetwork] && [disk isMountable])
 	{		
@@ -265,75 +280,90 @@ cleanup:
     BOOL useLegacyMode = [[NSUserDefaults standardUserDefaults] boolForKey:@"UseLegacyMode"];
     BDDisk *disk = volume.disk;
     
-    if((volume.legacyOS && !useLegacyMode)) { // since we flag winbugs as legacy right now
-        disk = self.efiWinbugs;
-        NSLog(@"devicePath: '%s'", (char *)[[disk devicePath] UTF8String]);
-        NSLog(@"filesystem: '%s'", (char *)[[disk filesystem] UTF8String]);
-        NSLog(@"volumeName: '%s'", (char *)[[disk volumeName] UTF8String]);
+    // Set EFI Partition for legacy OSes, if Legacy Mode is disabled and is not an optical media
+    if((volume.legacyOS && !useLegacyMode) && !([[disk filesystem] isEqualToString:@"udf"] || [[disk filesystem] isEqualToString:@"cd9660"])) {
+        if ([[volume systemName] isEqualToString:@"Windows"]) {
+            disk = self.efiWinbugs;
+        } else {
+            disk = self.efiDisk;
+        }
     }
 	
-	if([self passwordlessBootingEnabled])
-	{
-		NSTask *helperTask = [[NSTask alloc] init];
-		NSArray *arguments = [NSArray arrayWithObject:[disk devicePath]];
+    AuthorizationRef myAuthorizationRef;
+    OSStatus myStatus;
+    
+    // Bring app forward so auth window is in focus
+    [NSApp activateIgnoringOtherApps:YES];
+    
+    myStatus = AuthorizationCreate (NULL, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &myAuthorizationRef);
+    
+    if (myStatus == noErr) {
+        char *args[6];
         
-        if((volume.legacyOS && useLegacyMode)) {
-			arguments = [arguments arrayByAddingObject:@"--legacy"];
+        // Use "mount" if the device is optical media and is not legacy, otherwise use "device"
+        if (([[disk filesystem] isEqualToString:@"udf"] || [[disk filesystem] isEqualToString:@"cd9660"]) && !volume.legacyOS) {
+            args[0] = "--mount";
+            args[1] = (char *)[[disk volumePath] UTF8String];
+        } else {
+            args[0] = "--device";
+            args[1] = (char *)[[disk devicePath] UTF8String];
         }
         
-		[helperTask setLaunchPath:[self helperPath]];
-		[helperTask setArguments:arguments];
-		[helperTask launch];
-		[helperTask waitUntilExit];
-		returnValue = [helperTask terminationStatus];
-	}
-	else
-	{
-		AuthorizationRef myAuthorizationRef;
-		OSStatus myStatus;
-		// bring app forward so auth window is in focus
-		[NSApp activateIgnoringOtherApps:YES];
+        args[2] = "--nextonly";
+        args[3] = "--setBoot";
         
-		myStatus = AuthorizationCreate (NULL, kAuthorizationEmptyEnvironment, kAuthorizationFlagDefaults, &myAuthorizationRef);
-		
-		if (myStatus == noErr) {
-			char *args[6];
-			args[0] = "--device";
-			args[1] = (char *)[[disk devicePath] UTF8String];
-			args[2] = "--nextonly";
-			args[3] = "--setBoot";
-			if((volume.legacyOS && useLegacyMode)) {
-				args[4] = "--legacy";
-			} else {
-				args[4] = NULL;
-			}
-            args[5] = NULL; // terminate the args
-
+        /*// Set boot loader full file path if volume is not legacy
+        if(!((char *)[[volume systemBootLoader] UTF8String] == NULL) && (!volume.legacyOS || !useLegacyMode)) {
+            args[4] = "--file";
+            
+            if (!([disk volumePath] == NULL) && ![[disk volumePath] isEqualToString:@"(null)"]) {
+                NSString *fullBootLoaderPath = [NSString stringWithFormat:@"%@%@", [disk volumePath], [volume systemBootLoader]];
+                args[5] = (char *)[fullBootLoaderPath UTF8String];
+            } else {
+                args[5] = (char *)[[volume systemBootLoader] UTF8String];
+            }
+        } else {
+            args[4] = NULL;
+            args[5] = NULL;
+        }*/
+        
+        // Set Legacy Mode
+        if (
+            // If the volume is legacy and legacy mode is activated
+            (volume.legacyOS && useLegacyMode) ||
+            // Or, if the volume is legacy and is an optical media, we will force legacy mode regarding "useLegacyMode"
+            (volume.legacyOS && ([[disk filesystem] isEqualToString:@"udf"] || [[disk filesystem] isEqualToString:@"cd9660"]))
+            ){
+            args[4] = "--legacy";
+        } else {
+            args[4] = NULL;
+        }
+        
+        args[5] = NULL; // terminate the args
+        
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-            myStatus = AuthorizationExecuteWithPrivileges(myAuthorizationRef, "/usr/sbin/bless", 0, args, NULL);
-            NSLog(@"Executing... /usr/sbin/bless %s %s %s %s %s", args[0], args[1], args[2], args[3], args[4]);
+        myStatus = AuthorizationExecuteWithPrivileges(myAuthorizationRef, "/usr/sbin/bless", 0, args, NULL);
+        NSLog(@"Executing... /usr/sbin/bless %s %s %s %s %s %s", args[0], args[1], args[2], args[3], args[4], args[5]);
 #pragma clang diagnostic pop
-			
-			if (myStatus != noErr)
-			{
-				switch (myStatus) {
-					case errAuthorizationDenied:
-						returnValue = kQBVolumeManagerAuthenticationDenied;
-						break;
-					case errAuthorizationCanceled:
-						returnValue = kQBVolumeManagerCanceled;
-						break;
-						
-					default:
-						returnValue = kQBVolumeManagerUnknownError;
-						break;
-				}
-			}
-         } else {
-			returnValue = kQBVolumeManagerAuthenticationError;
-         }
-	}
+        
+        if (myStatus != noErr)
+        {
+            switch (myStatus) {
+                case errAuthorizationDenied:
+                    returnValue = kQBVolumeManagerAuthenticationDenied;
+                    break;
+                case errAuthorizationCanceled:
+                    returnValue = kQBVolumeManagerCanceled;
+                    break;
+                default:
+                    returnValue = kQBVolumeManagerUnknownError;
+                    break;
+            }
+        }
+     } else {
+        returnValue = kQBVolumeManagerAuthenticationError;
+     }
 
 	return returnValue;
 }

@@ -32,10 +32,10 @@
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"QBRefreshVolumes" object:nil];
 }
 
-- (IBAction)togglePasswordlessBooting:(id)sender
+/*- (IBAction)togglePasswordlessBooting:(id)sender
 {
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"QBPasswordlessBootingChanged" object:nil];
-}
+}*/
 
 - (IBAction)toggleLegacyBooting:(id)sender
 {

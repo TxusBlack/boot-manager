@@ -20,7 +20,8 @@
 	BDDisk *disk;
 	NSString *systemName;
 	NSString *systemVersion;
-	NSString *systemBuildNumber;
+    NSString *systemBuildNumber;
+    NSString *systemBootLoader;
 	BOOL legacyOS;
 }
 
@@ -33,6 +34,7 @@
 @property (copy) NSString *systemName;
 @property (copy) NSString *systemVersion;
 @property (copy) NSString *systemBuildNumber;
+@property (copy) NSString *systemBootLoader;
 @property (assign) BOOL legacyOS;
 
 + (QBVolume *)volumeWithDisk:(BDDisk *)aDisk;

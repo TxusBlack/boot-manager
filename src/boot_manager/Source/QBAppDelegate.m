@@ -98,7 +98,7 @@ static void * const kShowStatusIconContext = (void *)&kShowStatusIconContext;
 }
 
 - (IBAction)showApplicationWebsite:(id)sender {
-	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/abdyfranco/boot-manager"]];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://abdyfran.co/projects/boot-manager"]];
 }
 
 - (IBAction)showCompanyWebsite:(id)sender {

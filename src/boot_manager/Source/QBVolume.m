@@ -12,7 +12,7 @@
 @implementation QBVolume
 
 @synthesize disk, systemName, legacyOS, name, icon, bsdName, volumePath;
-@synthesize systemVersion, systemBuildNumber;
+@synthesize systemVersion, systemBuildNumber, systemBootLoader;
 
 + (QBVolume *)volumeWithDisk:(BDDisk *)aDisk
 {

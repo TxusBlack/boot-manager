@@ -17,7 +17,7 @@
 @property (assign) BOOL shouldStartBootManagerAtLogin;
 
 - (IBAction)toggleShowBuildNumber:(id)sender;
-- (IBAction)togglePasswordlessBooting:(id)sender;
+//- (IBAction)togglePasswordlessBooting:(id)sender;
 - (IBAction)toggleLegacyBooting:(id)sender;
 
 - (BOOL)isLeopardOrBetter;
